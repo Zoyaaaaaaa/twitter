@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Product to Twitter</title>
+</head>
+<body>
+  <h2>Upload Product to Twitter</h2>
+  <form id="uploadProductForm">
+    <label for="imageUrl">Image URL:</label><br>
+    <input type="text" id="imageUrl" name="imageUrl" required><br><br>
+
+    <label for="caption">Caption:</label><br>
+    <textarea id="caption" name="caption" rows="4" cols="50" required></textarea><br><br>
+
+    <button type="submit">Upload Product</button>
+  </form>
+
+  <p id="uploadStatus"></p>
+
+  <script>
+    document.getElementById('uploadProductForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(this);
+      const imageUrl = formData.get('imageUrl');
+      const caption = formData.get('caption');
+
+      try {
+        const response = await fetch('/uploadProduct', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productDetails: {
+              imageUrl,
+              caption,
+            }
+          }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          document.getElementById('uploadStatus').innerText = 'Product posted successfully on Twitter!';
+        } else {
+          document.getElementById('uploadStatus').innerText = 'Failed to post product. Please try again.';
+        }
+      } catch (error) {
+        console.error('Error uploading product:', error);
+        document.getElementById('uploadStatus').innerText = 'Failed to post product. Please try again.';
+      }
+    });
+  </script>
+</body>
+</html>
